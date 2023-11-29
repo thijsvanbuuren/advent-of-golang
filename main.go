@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"log/slog"
+
+	"github.com/thijsvanbuuren/advent-of-golang/internal/usecase"
+)
 
 func main() {
-    fmt.Println("Hello World")
+
+	logger := slog.Default()
+	usecase.ExecuteExercises(logger)
 }
