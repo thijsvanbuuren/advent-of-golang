@@ -10,19 +10,17 @@ import (
 func init() {
 	usecase.AppendExercise(domain.Exercise{
 		Year: 2023,
-		Day:  1,
+		Day:  2,
 		Part1: &domain.Part{
-			// File: "day1.txt",
 			Input: `
-			dsfaf
+			afsaf
+			asdfsaf
 			`,
-			DoDay: Day1Part1,
+			DoDay: Day2Part1,
 		},
 	})
 }
 
-func Day1Part1(input []string, logger *slog.Logger) any {
-	return struct {
-		test string
-	}{test: "ok"}
+func Day2Part1(input []string, logger *slog.Logger) any {
+	return 234
 }

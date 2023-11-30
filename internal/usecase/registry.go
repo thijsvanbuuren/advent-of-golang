@@ -4,49 +4,72 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"reflect"
-	"runtime"
+	"sort"
 	"strings"
 	"time"
 
 	"github.com/thijsvanbuuren/advent-of-golang/internal/domain"
-	"github.com/thijsvanbuuren/advent-of-golang/internal/usecase/y2023"
 )
 
-const _filePathPattern = "./data/%s/%s"
+const _filePathPattern = "./data/%v/%s"
 
-var registry = []domain.Year{
-	{
-		Year: "2023",
-		Exercises: []domain.Day{
-			{File: "day1.txt", DoDay: y2023.Day1},
-		},
-	},
+var ExerciseList = []domain.Exercise{}
+
+func AppendExercise(exercises domain.Exercise) {
+	ExerciseList = append(ExerciseList, exercises)
 }
 
 func ExecuteExercises(logger *slog.Logger) {
-	for _, y := range registry {
-		logger.Info("Running", slog.String("Year", y.Year))
+	sort.SliceStable(ExerciseList, func(i, j int) bool {
+		return ExerciseList[i].Day < ExerciseList[j].Day
+	})
+	for _, exercise := range ExerciseList {
+		logger.Info("Starting", slog.Int("Year", exercise.Year), slog.Int("Day", exercise.Day))
 
-		for _, day := range y.Exercises {
-			nameList := strings.Split(runtime.FuncForPC(reflect.ValueOf(day.DoDay).Pointer()).Name(), ".")
+		result1, dur1 := runPart(exercise.Part1, logger, exercise.Year, 1)
+		logger.Info("P1:",
+			slog.Duration("D", dur1),
+			slog.Any("R", result1),
+		)
+		result2, dur2 := runPart(exercise.Part2, logger, exercise.Year, 2)
+		logger.Info("P2:",
+			slog.Duration("D", dur2),
+			slog.Any("R", result2),
+		)
+	}
 
-			logger.Info("Starting", slog.String("Function", nameList[len(nameList)-1]))
+}
 
-			file, err := os.ReadFile(fmt.Sprintf(_filePathPattern, y.Year, day.File))
-
-			if err != nil {
-				logger.Error(err.Error())
-				continue
-			}
-			fileLines := strings.Split(string(file), "\n")
-
-			now := time.Now()
-			result := day.DoDay(fileLines, logger)
-
-			logger.Info("Result",
-				slog.Duration("Time Taken", time.Since(now)),
-				slog.Any("Result", result))
+func runPart(part *domain.Part, logger *slog.Logger, year int, partName int) (any, time.Duration) {
+	if part == nil {
+		return nil, time.Duration(0)
+	}
+	var fileLines []string
+	if len(part.Input) > 0 {
+		fileLines = strings.Split(strings.TrimSpace(part.Input), string(os.PathSeparator))
+	}
+	if len(part.File) > 0 {
+		fl, err := loadFile(year, part, logger)
+		fileLines = fl
+		if err != nil {
+			return "FILE NOT FOUND", time.Duration(0)
 		}
 	}
+
+	now := time.Now()
+	result := part.DoDay(fileLines, logger)
+	return result, time.Since(now)
+
+}
+
+func loadFile(year int, part1 *domain.Part, logger *slog.Logger) ([]string, error) {
+	file, err := os.ReadFile(fmt.Sprintf(_filePathPattern, year, part1.File))
+
+	if err != nil {
+		logger.Error(err.Error())
+		return nil, err
+	}
+
+	fileLines := strings.Split(string(file), "\n")
+	return fileLines, nil
 }
