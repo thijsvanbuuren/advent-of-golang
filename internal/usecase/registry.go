@@ -46,7 +46,7 @@ func runPart(part *domain.Part, logger *slog.Logger, year int, partName int) (an
 	}
 	var fileLines []string
 	if len(part.Input) > 0 {
-		fileLines = strings.Split(strings.TrimSpace(part.Input), string(os.PathSeparator))
+		fileLines = strings.Split(strings.TrimSpace(part.Input), "\n")
 	}
 	if len(part.File) > 0 {
 		fl, err := loadFile(year, part, logger)
