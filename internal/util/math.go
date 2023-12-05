@@ -1,5 +1,7 @@
 package util
 
+import "strconv"
+
 func Max(x, y int) int {
 	if x < y {
 		return y
@@ -13,4 +15,9 @@ func Min(x, y int) int {
 		return y
 	}
 	return x
+}
+
+func ToInt(str string) int {
+	res, _ := strconv.Atoi(str)
+	return res
 }
