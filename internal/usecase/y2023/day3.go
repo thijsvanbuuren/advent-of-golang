@@ -100,8 +100,6 @@ func Day3Part1(input []string, logger *slog.Logger) any {
 	var gearCount int64 = 0
 	for k, val := range tagged {
 		if len(tagged[k]) == 2 {
-			fmt.Println(k)
-			fmt.Println(val)
 			v1, _ := strconv.Atoi(val[0])
 			v2, _ := strconv.Atoi(val[1])
 			gearCount += (int64(v1) * int64(v2))
