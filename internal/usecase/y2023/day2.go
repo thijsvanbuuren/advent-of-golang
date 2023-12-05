@@ -1,7 +1,6 @@
 package y2023
 
 import (
-	"fmt"
 	"log/slog"
 	"strconv"
 	"strings"
@@ -111,7 +110,7 @@ func Day2Part2(input []string, logger *slog.Logger) any {
 
 		power := game.maxBlue * game.maxGreen * game.maxRed
 		count += power
-		fmt.Println(power)
+		// fmt.Println(power)
 
 	}
 	return count
